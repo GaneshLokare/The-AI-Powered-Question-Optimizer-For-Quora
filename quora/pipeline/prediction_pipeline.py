@@ -1,29 +1,75 @@
+import pickle
 import warnings
-warnings.filterwarnings("ignore")
+
+import numpy as np
 import pandas as pd
-from nltk.corpus import stopwords
+
+warnings.filterwarnings("ignore")
 import re
-from nltk.stem import PorterStemmer
+
+import distance
+import spacy
 from bs4 import BeautifulSoup
 from fuzzywuzzy import fuzz
-import distance
-import os.path as path
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from sklearn.feature_extraction.text import TfidfVectorizer
+import xgboost as xgb
+from quora.exception import QuoraException
 import sys
 
-
 from quora.constants.file_paths import Data
-from quora.constants.file_paths import Adv_features_path
+from quora.constants.file_paths import model_path
+from quora.constants.file_paths import q1_Feature_Path
 from quora.constants.data_constants import Number_of_rows
-from quora.exception import QuoraException
 
 
-class Advanced_Features:
+loaded_model = pickle.load(open(model_path, 'rb'))
+
+
+
+class Prediction:
     def __init__(self):
-       pass
+        pass
 
-    def adv_features_extraction():
+    def check_simillar_question(que):
         try:
-            df = pd.read_csv(Data, nrows = Number_of_rows)
+
+            data = pd.read_csv(Data, nrows=Number_of_rows)
+            df = data.drop(['qid1','qid2'],axis = 1)
+            df['question2'] = que
+            # drop null values
+            df.fillna("0",inplace = True)
+
+            def new_features(df):
+                df['q1len'] = df['question1'].str.len() 
+                df['q2len'] = df['question2'].str.len()
+                df['q1+q2_len'] = df['q1len'] + df['q2len']
+                df['q1-q2_len'] = abs(df['q1len'] - df['q2len'])
+                df['q1_words'] = df['question1'].str.split().str.len()
+                df['q2_words'] = df['question2'].str.split().str.len()
+                df['total_words'] = df['q1_words'] + df['q2_words']
+                df['words_difference'] = abs(df.q1_words - df.q2_words)
+                df['simillar_words'] = df.apply(lambda x: set(x['question1'].split()) & set(x['question2'].split()),axis=1)
+                df['simillar_words_count'] = df['simillar_words'].str.len()
+                df['word_share'] = df['simillar_words_count'] / df['total_words']
+                return df
+            df = new_features(df)  
+
+            def first_word_same(question1, question2):
+                first_words_1 = question1.apply(lambda x: x.split()[0].lower())
+                first_words_2 = question2.apply(lambda x: x.split()[0].lower())
+                lst = []
+                for q1,q2 in zip(first_words_1,first_words_2):
+                    if q1==q2:
+                        q1 = 1
+                    else:
+                        q1 = 0
+                    lst.append(q1)
+                return lst
+            df['first_word_same'] = first_word_same(df['question1'],df['question2'])  
+
+            # To get the results in 4 decemal points
             SAFE_DIV = 0.0001 
 
             STOP_WORDS = stopwords.words("english")
@@ -135,6 +181,9 @@ class Advanced_Features:
                 df["mean_len"]      = list(map(lambda x: x[9], token_features))
             
                 #Computing Fuzzy Features and Merging with Dataset
+                
+                # do read this blog: http://chairnerd.seatgeek.com/fuzzywuzzy-fuzzy-string-matching-in-python/
+                # https://stackoverflow.com/questions/31806695/when-to-use-which-fuzz-function-to-compare-2-strings
                 # https://github.com/seatgeek/fuzzywuzzy
                 
 
@@ -145,13 +194,87 @@ class Advanced_Features:
                 df["fuzz_ratio"]            = df.apply(lambda x: fuzz.QRatio(x["question1"], x["question2"]), axis=1)
                 df["fuzz_partial_ratio"]    = df.apply(lambda x: fuzz.partial_ratio(x["question1"], x["question2"]), axis=1)
                 df["longest_substr_ratio"]  = df.apply(lambda x: get_longest_substr_ratio(x["question1"], x["question2"]), axis=1)
-                df = df.drop(['qid1','qid2','question1','question2','is_duplicate'], axis = 1)
                 return df
-            final = extract_features(df)
-            print("advanced features extraction done")
-            feature_path = path.abspath(path.join(Adv_features_path))
-            return final.to_csv(feature_path,index=False)
+
+            df = extract_features(df)
+
+            df['question2'] = df['question2'].apply(lambda x: str(x))
+
+            # get tf-idf for all words
+            # merge texts
+            questions = list(df['question2'])
+
+            tfidf = TfidfVectorizer(lowercase=False, )
+            tfidf.fit_transform(questions)
+
+            # dict key:word and value:tf-idf score
+            word2tfidf = dict(zip(tfidf.get_feature_names(), tfidf.idf_))
+
+            # convert each question to a weighted average of word2vec vectors
+            nlp = spacy.load("venv\en_core_web_lg\en_core_web_lg-3.4.1")
+            vecs2 = []
+            qu2  = df['question2'][0]
+            doc2 = nlp(qu2) 
+            mean_vec2 = np.zeros([len(doc2), len(doc2[0].vector)])
+            for word2 in doc2:
+                    # word2vec
+                vec2 = word2.vector
+                    # fetch df score
+                try:
+                    idf = word2tfidf[str(word2)]
+                except:
+                    idf = 0
+                    # compute final vec
+                mean_vec2 += vec2 * idf
+            mean_vec2 = mean_vec2.mean(axis=0)
+            vecs2.append(mean_vec2)
+            lst = list(vecs2)
+            df3_q2 = pd.DataFrame(lst)
+            for i in range(len(df)):
+                df3_q2.loc[i] = df3_q2.loc[0]
+            lst = []
+            for i in range(len(df)):
+                lst.append(i)
+            df3_q2['id'] = lst
+
+            df3_q1 = pd.read_csv(q1_Feature_Path, nrows = Number_of_rows)
+            df3_q1.columns = df3_q1.columns.values + '_x'
+
+            q2_cols = []
+            for i in df3_q2.columns:
+                q2_cols.append(str(i))
+            df3_q2.columns = q2_cols
+            df3_q2.columns = df3_q2.columns.values + '_y'
+
+            df3 = df.drop(['question1','question2','is_duplicate','simillar_words'],axis=1)
+
+            df3_q1['id']=df['id']
+            df3_q2['id']=df['id']
+
+            df2  = df3_q1.merge(df3_q2, on='id',how='left')
+            result  = df3.merge(df2, on='id',how='left')
+
+            result.drop([ 'id','id_y'], axis = 1, inplace = True)
+
+            # after we read from sql table each entry was read it as a string
+            # we convert all the features into numaric before we apply any model
+            cols = list(result.columns)
+            for i in cols:
+                result[i] = result[i].apply(pd.to_numeric)
+
+            result = xgb.DMatrix(result)
+
+            pred_y = loaded_model.predict(result)
             
-            
+
+            simillar_questions = []
+            for i in range(len(pred_y)):
+                if pred_y[i] >0.5:
+                    res = (data.iloc[i]['question1'])
+                    simillar_questions.append(res)
+                
+
+            print(simillar_questions)
+
         except  Exception as e:
                 raise  QuoraException(e,sys)
