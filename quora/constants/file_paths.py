@@ -1,0 +1,7 @@
+Data = "quora\data_access\data.csv"
+Basic_Feature_Path = "quora/artifacts/features_save\Basic_features.csv"
+q1_Feature_Path = "quora/artifacts/features_save\q1_features.csv"
+q2_Feature_Path = "quora/artifacts/features_save\q2_features.csv"
+Adv_features_path = "quora/artifacts/features_save\dadv_features.csv"
+Final_feature_path = "quora/artifacts/features_save/final_features.csv"
+model_path = "quora/artifacts\model_save\model.sav"

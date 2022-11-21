@@ -1,0 +1,11 @@
+from-root
+scikit-learn==1.1.3
+pandas
+nltk
+spacy
+bs4
+fuzzywuzzy
+distance
+xgboost
+Flask
+-e .
