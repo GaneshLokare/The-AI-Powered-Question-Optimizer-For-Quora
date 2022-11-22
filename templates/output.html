@@ -1,0 +1,14 @@
+{% block content %}
+    <h1>{% block title %} Simillar Questions {% endblock %}</h1>
+    <div style="width: 50%; margin: auto">
+        {% for question in simillar_questions %}
+        
+        <div style="padding: 5px; background-color: #EEE; margin: 10px">
+            <p style="font-size: 14px">{{ question}}</p>
+            
+            
+        </div>
+        {% endfor %}
+        
+    </div>
+{% endblock %}

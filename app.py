@@ -273,14 +273,17 @@ def check_simillar_question():
     
 
     simillar_questions = []
+    probability = []
     for i in range(len(pred_y)):
         if pred_y[i] >0.5:
             res = (data.iloc[i]['question1'])
             simillar_questions.append(res)
-        
+            prob = round(pred_y[i] * 100,2)
+            probability.append(prob)
+            
         
     
-    return jsonify("Simillare Qestions = {} ".format(simillar_questions))
+    return render_template('output.html',simillar_questions=zip(simillar_questions,probability))
         
 
     
