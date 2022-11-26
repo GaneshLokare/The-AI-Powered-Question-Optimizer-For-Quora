@@ -16,7 +16,8 @@ class Basic_Features:
     def basic_feature_extraction():
         try:
             df = pd.read_csv(Data, nrows = Number_of_rows)
-            
+
+            # extract new features
             df.fillna("0",inplace = True)
             df['q1len'] = df['question1'].str.len() 
             df['q2len'] = df['question2'].str.len()
@@ -43,6 +44,7 @@ class Basic_Features:
                 return lst
             df['first_word_same'] = first_word_same(df['question1'],df['question2'])
             df = df.drop(['qid1','qid2','question1','question2','simillar_words'], axis = 1)
+            # save all features to csv
             feature_path = path.abspath(path.join(Basic_Feature_Path))
             print("Basic features extraction done")
             return df.to_csv(feature_path,index=False)

@@ -39,7 +39,7 @@ class NLP_Features:
         # tqdm is used to print the progrss bar
             for qu1 in (list(df['question1'])):
                 doc1 = nlp(qu1) 
-            # 384 is the number of dimensions of vectors 
+            # 300 is the number of dimensions of vectors 
                 mean_vec1 = np.zeros([len(doc1), len(doc1[0].vector)])
                 for word1 in doc1:
             # word2vec
@@ -74,6 +74,7 @@ class NLP_Features:
                 vecs2.append(mean_vec2)
             df['q2_feats_m'] = list(vecs2)
 
+            # merge 2 dataframes
             df3 = df.drop(['qid1','qid2','question1','question2','is_duplicate'],axis=1)
             df3_q1 = pd.DataFrame(df3.q1_feats_m.values.tolist(), index= df3.index)
             df3_q2 = pd.DataFrame(df3.q2_feats_m.values.tolist(), index= df3.index)

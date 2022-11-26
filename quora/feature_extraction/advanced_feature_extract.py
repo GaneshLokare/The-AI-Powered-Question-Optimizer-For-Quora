@@ -22,6 +22,7 @@ class Advanced_Features:
        pass
 
     def adv_features_extraction():
+        # extract advanced features
         try:
             df = pd.read_csv(Data, nrows = Number_of_rows)
             SAFE_DIV = 0.0001 
@@ -135,7 +136,6 @@ class Advanced_Features:
                 df["mean_len"]      = list(map(lambda x: x[9], token_features))
             
                 #Computing Fuzzy Features and Merging with Dataset
-                # https://github.com/seatgeek/fuzzywuzzy
                 
 
                 df["token_set_ratio"]       = df.apply(lambda x: fuzz.token_set_ratio(x["question1"], x["question2"]), axis=1)
@@ -149,6 +149,7 @@ class Advanced_Features:
                 return df
             final = extract_features(df)
             print("advanced features extraction done")
+            # save all features to csv
             feature_path = path.abspath(path.join(Adv_features_path))
             return final.to_csv(feature_path,index=False)
             
