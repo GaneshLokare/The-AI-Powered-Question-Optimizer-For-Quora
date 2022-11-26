@@ -1,6 +1,7 @@
 import pandas as pd 
 import os.path as path
 import sys
+from quora.logger import logging
 from quora.constants.file_paths import Data
 from quora.constants.file_paths import Basic_Feature_Path
 from quora.constants.data_constants import Number_of_rows
@@ -15,6 +16,7 @@ class Basic_Features:
 
     def basic_feature_extraction():
         try:
+            logging.info("Extracting basic features")
             df = pd.read_csv(Data, nrows = Number_of_rows)
 
             # extract new features
@@ -43,7 +45,7 @@ class Basic_Features:
                     lst.append(q1)
                 return lst
             df['first_word_same'] = first_word_same(df['question1'],df['question2'])
-            df = df.drop(['qid1','qid2','question1','question2','simillar_words'], axis = 1)
+            df = df.drop(['qid1','qid1','question1','question2','simillar_words'], axis = 1)
             # save all features to csv
             feature_path = path.abspath(path.join(Basic_Feature_Path))
             print("Basic features extraction done")
@@ -51,3 +53,5 @@ class Basic_Features:
             
         except  Exception as e:
                 raise  QuoraException(e,sys)
+
+Basic_Features.basic_feature_extraction()

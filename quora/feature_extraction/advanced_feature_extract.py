@@ -10,7 +10,7 @@ import distance
 import os.path as path
 import sys
 
-
+from quora.logger import logging
 from quora.constants.file_paths import Data
 from quora.constants.file_paths import Adv_features_path
 from quora.constants.data_constants import Number_of_rows
@@ -24,6 +24,7 @@ class Advanced_Features:
     def adv_features_extraction():
         # extract advanced features
         try:
+            logging.info("Extracting advanced features")
             df = pd.read_csv(Data, nrows = Number_of_rows)
             SAFE_DIV = 0.0001 
 

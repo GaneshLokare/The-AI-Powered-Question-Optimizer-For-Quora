@@ -34,7 +34,7 @@ class Prediction:
 
     def check_simillar_question(que):
         try:
-
+            
             data = pd.read_csv(Data, nrows=Number_of_rows)
             df = data.drop(['qid1','qid2'],axis = 1)
             df['question2'] = que

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 import spacy
+from quora.logger import logging
 from quora.constants.file_paths import Data
 from quora.constants.file_paths import q1_Feature_Path
 from quora.constants.file_paths import q2_Feature_Path
@@ -22,6 +23,7 @@ class NLP_Features:
 
     def npl_feature_extraction():
         try:
+            logging.info("Extracting nlp features")
             df = pd.read_csv(Data, nrows = Number_of_rows)
             
             df['question1'] = df['question1'].apply(lambda x: str(x))
