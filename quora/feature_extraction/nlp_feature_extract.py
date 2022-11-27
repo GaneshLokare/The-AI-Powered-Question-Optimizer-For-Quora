@@ -23,7 +23,7 @@ class NLP_Features:
 
     def npl_feature_extraction():
         try:
-            logging.info("Extracting nlp features")
+            
             df = pd.read_csv(Data, nrows = Number_of_rows)
             
             df['question1'] = df['question1'].apply(lambda x: str(x))
@@ -86,7 +86,7 @@ class NLP_Features:
             q1_save = df3_q1.to_csv(q1_path,index=False) 
             q2_save = df3_q2.to_csv(q2_path,index=False)
 
-            print("NPL features extraction done")
+            logging.info("NPL features extraction done")
 
             return q1_save, q2_save
         except  Exception as e:

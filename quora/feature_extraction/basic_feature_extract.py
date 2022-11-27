@@ -16,7 +16,7 @@ class Basic_Features:
 
     def basic_feature_extraction():
         try:
-            logging.info("Extracting basic features")
+            logging.info("{} data points are selected".format(Number_of_rows))
             df = pd.read_csv(Data, nrows = Number_of_rows)
 
             # extract new features
@@ -45,13 +45,11 @@ class Basic_Features:
                     lst.append(q1)
                 return lst
             df['first_word_same'] = first_word_same(df['question1'],df['question2'])
-            df = df.drop(['qid1','qid1','question1','question2','simillar_words'], axis = 1)
+            df = df.drop(['qid1','qid2','question1','question2','simillar_words'], axis = 1)
             # save all features to csv
             feature_path = path.abspath(path.join(Basic_Feature_Path))
-            print("Basic features extraction done")
+            logging.info("Basic features extraction done")
             return df.to_csv(feature_path,index=False)
             
         except  Exception as e:
                 raise  QuoraException(e,sys)
-
-Basic_Features.basic_feature_extraction()

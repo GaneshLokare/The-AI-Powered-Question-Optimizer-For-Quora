@@ -18,6 +18,7 @@ import xgboost as xgb
 from quora.exception import QuoraException
 import sys
 
+from quora.logger import logging
 from quora.constants.file_paths import Data
 from quora.constants.file_paths import model_path
 from quora.constants.file_paths import q1_Feature_Path
@@ -34,7 +35,7 @@ class Prediction:
 
     def check_simillar_question(que):
         try:
-            
+            logging.info("Query question will be checked on {} questions".format(Number_of_rows))
             data = pd.read_csv(Data, nrows=Number_of_rows)
             df = data.drop(['qid1','qid2'],axis = 1)
             df['question2'] = que
@@ -267,14 +268,15 @@ class Prediction:
             pred_y = loaded_model.predict(result)
             
 
-            simillar_questions = []
+            similar_questions = []
             for i in range(len(pred_y)):
                 if pred_y[i] >0.5:
                     res = (data.iloc[i]['question1'])
-                    simillar_questions.append(res)
+                    similar_questions.append(res)
                 
-
-            print(simillar_questions)
+            logging.info("Query question : {}".format(que))
+            logging.info("Similar Questions : {}".format(similar_questions))
+            print(similar_questions)
 
         except  Exception as e:
                 raise  QuoraException(e,sys)
