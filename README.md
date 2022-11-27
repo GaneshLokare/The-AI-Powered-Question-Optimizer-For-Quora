@@ -1,5 +1,5 @@
 
-# Quora-Check-Simillar-Questions
+# Quora-Check-Similar-Questions
 
 ## Problem Statement  
 
