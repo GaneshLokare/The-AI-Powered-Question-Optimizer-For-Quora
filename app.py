@@ -15,10 +15,9 @@ from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import xgboost as xgb
+import os.path as path
 
-from quora.constants.file_paths import Data
-from quora.constants.file_paths import model_path
-from quora.constants.file_paths import q1_Feature_Path
+from quora.constants.file_paths import Data, model_path, q1_Feature_Path, new_questions_path
 from quora.constants.data_constants import Number_of_rows
 
 from flask import Flask,request, jsonify, render_template
@@ -272,18 +271,28 @@ def check_simillar_question():
     pred_y = loaded_model.predict(result)
     
 
-    simillar_questions = []
+    similar_questions = []
     probability = []
     for i in range(len(pred_y)):
         if pred_y[i] >0.5:
             res = (data.iloc[i]['question1'])
-            simillar_questions.append(res)
+            similar_questions.append(res)
             prob = round(pred_y[i] * 100,2)
             probability.append(prob)
             
-        
+    if len(similar_questions) == 0:
+    # Open File
+        file_path = path.abspath(path.join(new_questions_path))
+        with open(file_path, 'a') as f_object:
+
+# Write data to file
+            f_object.write(que + "\n")
+            f_object.close()   
     
-    return render_template('output.html',simillar_questions=zip(simillar_questions,probability))
+    if len(similar_questions) == 0:
+        return render_template('output1.html')
+    else:
+        return render_template('output.html',simillar_questions=zip(similar_questions,probability))
         
 
     
