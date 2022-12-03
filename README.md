@@ -18,3 +18,8 @@ Model will classify a new question is similar to previous questions or not. If i
 ## Tools used
 
 Python, SQL, NLP, ML, pandas, NumPy, matplotlib, scikit learn, git, flask.
+
+## Feature Extraction Flow
+
+![1](flowcharts\feature extraction.png)
+
