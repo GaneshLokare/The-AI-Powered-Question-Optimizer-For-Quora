@@ -21,5 +21,8 @@ Python, SQL, NLP, ML, pandas, NumPy, matplotlib, scikit learn, git, flask.
 
 ## Feature Extraction Flow
 
-![1](flowcharts\feature extraction.png)
+![1](flowcharts/feature%20extraction.png)
 
+## Training Flow
+
+![2](flowcharts/model%20training.png)
