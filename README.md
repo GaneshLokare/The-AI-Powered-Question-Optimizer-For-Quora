@@ -17,7 +17,7 @@ Model will classify a new question is similar to previous questions or not. If i
 
 ## Tools used
 
-Python, SQL, NLP, ML, pandas, NumPy, matplotlib, scikit learn, git, flask.
+Python, SQL, NLP, ML, pandas, NumPy, matplotlib, scikit learn, git, flask, docker, AWS.
 
 ## Feature Extraction Flow
 
