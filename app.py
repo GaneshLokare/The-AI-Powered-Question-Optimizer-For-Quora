@@ -292,7 +292,7 @@ def check_simillar_question():
     if len(similar_questions) == 0:
         return render_template('output1.html')
     else:
-        return render_template('output.html',simillar_questions=zip(similar_questions,probability))
+        return render_template('output.html',Similar_questions = similar_questions )
         
 
     
