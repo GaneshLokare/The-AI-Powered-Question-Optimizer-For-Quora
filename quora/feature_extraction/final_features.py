@@ -1,3 +1,4 @@
+# Import required libraries
 import pandas as pd
 import os.path as path
 from quora.constants.file_paths import Final_feature_path
@@ -17,12 +18,15 @@ class Final_Features:
        pass
 
     def final_features():
+        '''merge all extracted features into single file'''
         try:
+            # load all data
             basic_df = pd.read_csv(Basic_Feature_Path)
             adv_df = pd.read_csv(Adv_features_path)
             q1_featurs = pd.read_csv(q1_Feature_Path)
             q2_featurs = pd.read_csv(q2_Feature_Path)
 
+            # merge on id
             q1_featurs['id']=basic_df['id']
             q2_featurs['id']=basic_df['id']
 
@@ -31,7 +35,7 @@ class Final_Features:
             result  = df1.merge(df2, on='id',how='left')
 
             print("All features merged and saved to csv")
-
+            # save 
             feature_path = path.abspath(path.join(Final_feature_path))
             return result.to_csv(feature_path,index=False)
         except  Exception as e:

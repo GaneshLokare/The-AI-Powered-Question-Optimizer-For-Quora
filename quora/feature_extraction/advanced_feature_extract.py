@@ -1,3 +1,4 @@
+# Import required libraries
 import warnings
 warnings.filterwarnings("ignore")
 import pandas as pd
@@ -22,15 +23,16 @@ class Advanced_Features:
        pass
 
     def adv_features_extraction():
-        # extract advanced features
+        '''extract advanced features'''
         try:
-            
+            # load data
             df = pd.read_csv(Data, nrows = Number_of_rows)
+            # To get the results in 4 decemal points
             SAFE_DIV = 0.0001 
-
+            # save all stopwords in stop_words variable
             STOP_WORDS = stopwords.words("english")
 
-
+            # function to Removing html tags, Removing Punctuations, Performing stemming and Removing Stopwords.
             def preprocess(x):
                 x = str(x).lower()
                 x = x.replace(",000,000", "m").replace(",000", "k").replace("′", "'").replace("’", "'")\
@@ -59,6 +61,7 @@ class Advanced_Features:
                 
                 return x
 
+            # function to extract advanced features.
             def get_token_features(q1, q2):
                 token_features = [0.0]*10
                 
@@ -146,14 +149,16 @@ class Advanced_Features:
                 df["fuzz_ratio"]            = df.apply(lambda x: fuzz.QRatio(x["question1"], x["question2"]), axis=1)
                 df["fuzz_partial_ratio"]    = df.apply(lambda x: fuzz.partial_ratio(x["question1"], x["question2"]), axis=1)
                 df["longest_substr_ratio"]  = df.apply(lambda x: get_longest_substr_ratio(x["question1"], x["question2"]), axis=1)
-                df = df.drop(['qid1','qid2','question1','question2','is_duplicate'], axis = 1)
+                df = df.drop(['qid1','qid2','question1','question2','is_duplicate'], axis = 1) # keeping only extracted features
                 return df
             final = extract_features(df)
             logging.info("advanced features extraction done")
-            # save all features to csv
+            # save extracted features to csv
             feature_path = path.abspath(path.join(Adv_features_path))
             return final.to_csv(feature_path,index=False)
             
             
         except  Exception as e:
                 raise  QuoraException(e,sys)
+
+

@@ -12,6 +12,7 @@ class FeatureExtraction:
        pass
 
     def extract_all_features():
+        '''extract and merge all features'''
         try:
 
             def basic_features():

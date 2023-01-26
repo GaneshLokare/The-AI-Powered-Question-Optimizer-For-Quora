@@ -1,3 +1,4 @@
+# import required libraries
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -13,7 +14,7 @@ import sys
 import os.path as path
 
 
-
+# load spacy liabrary
 nlp = spacy.load("venv\en_core_web_lg\en_core_web_lg-3.4.1")
 
 class NLP_Features:
@@ -22,14 +23,18 @@ class NLP_Features:
 
 
     def npl_feature_extraction():
+        '''extract nlp features'''
         try:
-            
+            # load data
             df = pd.read_csv(Data, nrows = Number_of_rows)
             
+            # convert all questions into string
             df['question1'] = df['question1'].apply(lambda x: str(x))
             df['question2'] = df['question2'].apply(lambda x: str(x))
             questions = list(df['question1']) + list(df['question2'])
 
+            # get tf-idf for all words
+            # merge texts
             tfidf = TfidfVectorizer(lowercase=False, )
             tfidf.fit_transform(questions)
 
@@ -76,13 +81,14 @@ class NLP_Features:
                 vecs2.append(mean_vec2)
             df['q2_feats_m'] = list(vecs2)
 
-            # merge 2 dataframes
+            # convert spacy vectors into dataframe
             df3 = df.drop(['qid1','qid2','question1','question2','is_duplicate'],axis=1)
             df3_q1 = pd.DataFrame(df3.q1_feats_m.values.tolist(), index= df3.index)
             df3_q2 = pd.DataFrame(df3.q2_feats_m.values.tolist(), index= df3.index)
 
             q1_path = path.abspath(path.join(q1_Feature_Path))
             q2_path = path.abspath(path.join(q2_Feature_Path))
+            # save extracted features
             q1_save = df3_q1.to_csv(q1_path,index=False) 
             q2_save = df3_q2.to_csv(q2_path,index=False)
 
