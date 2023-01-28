@@ -26,8 +26,7 @@ XGBoost is a powerful and efficient machine learning algorithm that is widely us
 The model's performance is evaluated using metrics such as Log loss, confusion matrix, precision and recall.
 
 ## Solution Provided:
-
-Model will classify a new question is similar to previous questions or not. If it is similar to previous questions, model will show previously similar question and it's answer and if it's not similar, model will add it as a new question into database.
+Developed a machine learning model which identify the new question is similar to questions present in database or not. If it is similar to question present in database, model will show directly question and it's answer from database otherwise model will add it as a new question into database.
 
 ## Tools used
 
