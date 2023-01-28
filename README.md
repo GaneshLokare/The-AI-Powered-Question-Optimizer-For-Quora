@@ -1,15 +1,15 @@
 
 # Quora Check Similar Questions
 
-## Problem Statement:  
-
-Identify given a pair of questions are similar or not.
-
 ## Description:
 
 Quora is a place to gain and share knowledge about anything. This empowers people to learn from each other and to better understand the world.
 
 Over 100 million people visit Quora every month, so it's no surprise that many people ask multiple questions with same meaning. Multiple questions with the same intent can cause seekers to spend more time finding the best answer to their question, and make writers feel they need to answer multiple versions of the same question.
+
+To solve this problem, developed a machine learning model which identify the new question is similar to questions present in database or not. If it is similar to question present in database, model will show directly question and it's answer from database otherwise model will add it as a new question into database.
+
+Used more than 400k pair of questions with ground truth is the set of labels that have been supplied by human experts and utilized state-of-the-art feature extraction techniques to extract features from these pair of questions. Which are used as a input to XGBoost model.
 
 ## Data: 
 The dataset used in this project is the Quora Question Pairs dataset from Kaggle. It contains 4,04,290 question pairs. The ground truth is the set of labels that have been supplied by human experts.
