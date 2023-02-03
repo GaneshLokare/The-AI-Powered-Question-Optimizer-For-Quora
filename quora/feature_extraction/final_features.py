@@ -13,11 +13,11 @@ import sys
 
 
 
-class Final_Features:
+class FinalFeatures:
     def __init__(self):
        pass
 
-    def final_features():
+    def merge_features(self):
         '''merge all extracted features into single file'''
         try:
             # load all data
@@ -40,3 +40,5 @@ class Final_Features:
             return result.to_csv(feature_path,index=False)
         except  Exception as e:
                 raise  QuoraException(e,sys)
+
+

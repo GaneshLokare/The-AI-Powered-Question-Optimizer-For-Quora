@@ -17,21 +17,19 @@ import os.path as path
 # load spacy liabrary
 nlp = spacy.load("venv\en_core_web_lg\en_core_web_lg-3.4.1")
 
-class NLP_Features:
+class NLPFeatures:
     def __init__(self):
-       pass
+       self.df = pd.read_csv(Data, nrows = Number_of_rows)
 
 
-    def npl_feature_extraction():
+    def npl_feature_extraction(self):
         '''extract nlp features'''
         try:
-            # load data
-            df = pd.read_csv(Data, nrows = Number_of_rows)
             
             # convert all questions into string
-            df['question1'] = df['question1'].apply(lambda x: str(x))
-            df['question2'] = df['question2'].apply(lambda x: str(x))
-            questions = list(df['question1']) + list(df['question2'])
+            self.df['question1'] = self.df['question1'].apply(lambda x: str(x))
+            self.df['question2'] = self.df['question2'].apply(lambda x: str(x))
+            questions = list(self.df['question1']) + list(self.df['question2'])
 
             # get tf-idf for all words
             # merge texts
@@ -44,14 +42,14 @@ class NLP_Features:
             vecs1 = []
         # https://github.com/noamraph/tqdm
         # tqdm is used to print the progrss bar
-            for qu1 in (list(df['question1'])):
+            for qu1 in (list(self.df['question1'])):
                 doc1 = nlp(qu1) 
             # 300 is the number of dimensions of vectors 
                 mean_vec1 = np.zeros([len(doc1), len(doc1[0].vector)])
                 for word1 in doc1:
             # word2vec
                     vec1 = word1.vector
-                # fetch df score
+                # fetch self.df score
                     try:
                         idf = word2tfidf[str(word1)]
                     except:
@@ -60,16 +58,16 @@ class NLP_Features:
                     mean_vec1 += vec1 * idf
                 mean_vec1 = mean_vec1.mean(axis=0)
                 vecs1.append(mean_vec1)
-            df['q1_feats_m'] = list(vecs1)
+            self.df['q1_feats_m'] = list(vecs1)
 
             vecs2 = []
-            for qu2 in (list(df['question2'])):
+            for qu2 in (list(self.df['question2'])):
                 doc2 = nlp(qu2) 
                 mean_vec2 = np.zeros([len(doc2), len(doc2[0].vector)])
                 for word2 in doc2:
                     # word2vec
                     vec2 = word2.vector
-                    # fetch df score
+                    # fetch self.df score
                     try:
                         idf = word2tfidf[str(word2)]
                     except:
@@ -79,10 +77,10 @@ class NLP_Features:
                     mean_vec2 += vec2 * idf
                 mean_vec2 = mean_vec2.mean(axis=0)
                 vecs2.append(mean_vec2)
-            df['q2_feats_m'] = list(vecs2)
+            self.df['q2_feats_m'] = list(vecs2)
 
             # convert spacy vectors into dataframe
-            df3 = df.drop(['qid1','qid2','question1','question2','is_duplicate'],axis=1)
+            df3 = self.df.drop(['qid1','qid2','question1','question2','is_duplicate'],axis=1)
             df3_q1 = pd.DataFrame(df3.q1_feats_m.values.tolist(), index= df3.index)
             df3_q2 = pd.DataFrame(df3.q2_feats_m.values.tolist(), index= df3.index)
 
@@ -95,6 +93,9 @@ class NLP_Features:
             logging.info("NPL features extraction done")
 
             return q1_save, q2_save
+            
         except  Exception as e:
                 raise  QuoraException(e,sys)
+
+
 

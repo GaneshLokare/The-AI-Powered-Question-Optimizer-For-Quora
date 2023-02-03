@@ -25,19 +25,16 @@ from quora.constants.file_paths import q1_Feature_Path
 from quora.constants.data_constants import Number_of_rows
 
 
-loaded_model = pickle.load(open(model_path, 'rb'))
-
-
 
 class Prediction:
     def __init__(self):
-        pass
+        self.loaded_model = pickle.load(open(model_path, 'rb'))
+        self.data = pd.read_csv(Data, nrows=Number_of_rows)
 
-    def check_simillar_question(que):
+    def check_simillar_question(self,que):
         try:
             logging.info("Query question will be checked on {} questions".format(Number_of_rows))
-            data = pd.read_csv(Data, nrows=Number_of_rows)
-            df = data.drop(['qid1','qid2'],axis = 1)
+            df = self.data.drop(['qid1','qid2'],axis = 1)
             df['question2'] = que
             # drop null values
             df.fillna("0",inplace = True)
@@ -265,13 +262,13 @@ class Prediction:
 
             result = xgb.DMatrix(result)
 
-            pred_y = loaded_model.predict(result)
+            pred_y = self.loaded_model.predict(result)
             
 
             similar_questions = []
             for i in range(len(pred_y)):
                 if pred_y[i] >0.5:
-                    res = (data.iloc[i]['question1'])
+                    res = (self.data.iloc[i]['question1'])
                     similar_questions.append(res)
                 
             logging.info("Query question : {}".format(que))
@@ -280,3 +277,4 @@ class Prediction:
 
         except  Exception as e:
                 raise  QuoraException(e,sys)
+

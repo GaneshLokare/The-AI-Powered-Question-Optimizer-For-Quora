@@ -19,13 +19,15 @@ from quora.exception import QuoraException
 
 class ModelTraining:
     def __init__(self):
-       pass
+       self.Final_feature_path = Final_feature_path
+       self.Number_of_rows = Number_of_rows
+       self.model_path = model_path
 
 
-    def model_training():
+    def model_training(self):
         try:
             # load final features data
-            data = pd.read_csv(Final_feature_path)
+            data = pd.read_csv(self.Final_feature_path)
 
             # create dependant and independant variables
             y_true = data['is_duplicate']
@@ -70,11 +72,11 @@ class ModelTraining:
             predict_y = bst.predict(d_test1)
             logging.info("The test log loss is: {} ".format(log_loss(y_test, predict_y, labels=labels, eps=1e-15)))
             
-            logging.info("Model tained on {} data points".format(Number_of_rows))
+            logging.info("Model tained on {} data points".format(self.Number_of_rows))
             logging.info("Model training done and model saved")
             
             # save model
-            feature_path = path.abspath(path.join(model_path))
+            feature_path = path.abspath(path.join(self.model_path))
             return pickle.dump(bst, open(feature_path, 'wb'))
 
         except  Exception as e:

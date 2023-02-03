@@ -18,15 +18,14 @@ from quora.constants.data_constants import Number_of_rows
 from quora.exception import QuoraException
 
 
-class Advanced_Features:
+class AdvancedFeatures:
     def __init__(self):
-       pass
+       self.df = pd.read_csv(Data, nrows = Number_of_rows)
 
-    def adv_features_extraction():
+    def adv_features_extraction(self):
         '''extract advanced features'''
         try:
-            # load data
-            df = pd.read_csv(Data, nrows = Number_of_rows)
+            
             # To get the results in 4 decemal points
             SAFE_DIV = 0.0001 
             # save all stopwords in stop_words variable
@@ -117,45 +116,46 @@ class Advanced_Features:
                 else:
                     return len(strs[0]) / (min(len(a), len(b)) + 1)
 
-            def extract_features(df):
+            def extract_features():
                 # preprocessing each question
-                df["question1"] = df["question1"].fillna("").apply(preprocess)
-                df["question2"] = df["question2"].fillna("").apply(preprocess)
+                self.df["question1"] = self.df["question1"].fillna("").apply(preprocess)
+                self.df["question2"] = self.df["question2"].fillna("").apply(preprocess)
 
                 
                 
                 # Merging Features with dataset
                 
-                token_features = df.apply(lambda x: get_token_features(x["question1"], x["question2"]), axis=1)
+                token_features = self.df.apply(lambda x: get_token_features(x["question1"], x["question2"]), axis=1)
                 
-                df["cwc_min"]       = list(map(lambda x: x[0], token_features))
-                df["cwc_max"]       = list(map(lambda x: x[1], token_features))
-                df["csc_min"]       = list(map(lambda x: x[2], token_features))
-                df["csc_max"]       = list(map(lambda x: x[3], token_features))
-                df["ctc_min"]       = list(map(lambda x: x[4], token_features))
-                df["ctc_max"]       = list(map(lambda x: x[5], token_features))
-                df["last_word_eq"]  = list(map(lambda x: x[6], token_features))
-                df["first_word_eq"] = list(map(lambda x: x[7], token_features))
-                df["abs_len_diff"]  = list(map(lambda x: x[8], token_features))
-                df["mean_len"]      = list(map(lambda x: x[9], token_features))
+                self.df["cwc_min"]       = list(map(lambda x: x[0], token_features))
+                self.df["cwc_max"]       = list(map(lambda x: x[1], token_features))
+                self.df["csc_min"]       = list(map(lambda x: x[2], token_features))
+                self.df["csc_max"]       = list(map(lambda x: x[3], token_features))
+                self.df["ctc_min"]       = list(map(lambda x: x[4], token_features))
+                self.df["ctc_max"]       = list(map(lambda x: x[5], token_features))
+                self.df["last_word_eq"]  = list(map(lambda x: x[6], token_features))
+                self.df["first_word_eq"] = list(map(lambda x: x[7], token_features))
+                self.df["abs_len_diff"]  = list(map(lambda x: x[8], token_features))
+                self.df["mean_len"]      = list(map(lambda x: x[9], token_features))
             
                 #Computing Fuzzy Features and Merging with Dataset
                 
 
-                df["token_set_ratio"]       = df.apply(lambda x: fuzz.token_set_ratio(x["question1"], x["question2"]), axis=1)
+                self.df["token_set_ratio"]       = self.df.apply(lambda x: fuzz.token_set_ratio(x["question1"], x["question2"]), axis=1)
                 # The token sort approach involves tokenizing the string in question, sorting the tokens alphabetically, and 
                 # then joining them back into a string We then compare the transformed strings with a simple ratio().
-                df["token_sort_ratio"]      = df.apply(lambda x: fuzz.token_sort_ratio(x["question1"], x["question2"]), axis=1)
-                df["fuzz_ratio"]            = df.apply(lambda x: fuzz.QRatio(x["question1"], x["question2"]), axis=1)
-                df["fuzz_partial_ratio"]    = df.apply(lambda x: fuzz.partial_ratio(x["question1"], x["question2"]), axis=1)
-                df["longest_substr_ratio"]  = df.apply(lambda x: get_longest_substr_ratio(x["question1"], x["question2"]), axis=1)
-                df = df.drop(['qid1','qid2','question1','question2','is_duplicate'], axis = 1) # keeping only extracted features
-                return df
-            final = extract_features(df)
+                self.df["token_sort_ratio"]      = self.df.apply(lambda x: fuzz.token_sort_ratio(x["question1"], x["question2"]), axis=1)
+                self.df["fuzz_ratio"]            = self.df.apply(lambda x: fuzz.QRatio(x["question1"], x["question2"]), axis=1)
+                self.df["fuzz_partial_ratio"]    = self.df.apply(lambda x: fuzz.partial_ratio(x["question1"], x["question2"]), axis=1)
+                self.df["longest_substr_ratio"]  = self.df.apply(lambda x: get_longest_substr_ratio(x["question1"], x["question2"]), axis=1)
+                self.df = self.df.drop(['qid1','qid2','question1','question2','is_duplicate'], axis = 1) # keeping only extracted features
+                return self.df
+            final = extract_features()
             logging.info("advanced features extraction done")
             # save extracted features to csv
             feature_path = path.abspath(path.join(Adv_features_path))
             return final.to_csv(feature_path,index=False)
+            
             
             
         except  Exception as e:
