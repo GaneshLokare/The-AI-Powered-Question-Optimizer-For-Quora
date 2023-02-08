@@ -1,5 +1,5 @@
 
-# Quora Check Similar Questions
+# The AI-Powered Question Optimizer For Quora
 
 ## Description:
 
