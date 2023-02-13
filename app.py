@@ -20,7 +20,7 @@ import os.path as path
 from quora.constants.file_paths import Data, model_path, q1_Feature_Path, new_questions_path
 from quora.constants.data_constants import Number_of_rows
 
-from flask import Flask,request, jsonify, render_template
+from flask import Flask,request, render_template
 
 app = Flask(__name__)
 
