@@ -32,10 +32,9 @@ Developed a machine learning model which identify the new question is similar to
 
 Python, SQL, NLP, ML, pandas, NumPy, matplotlib, scikit learn, git, flask, docker, AWS.
 
-## Feature Extraction Flow
+## Demo Video:
 
-![1](flowcharts/feature%20extraction.png)
 
-## Training Flow
 
-![2](flowcharts/model%20training.png)
+https://user-images.githubusercontent.com/90838133/218653453-d6bb8cae-e71a-4f9c-9ce7-f541c51953e3.mp4
+
